@@ -71,7 +71,7 @@ docker build -t meeting-summarizer .
 docker run -p 5000:5000 meeting-summarizer
 ⚙️ Run Locally (Without Docker)
 1. Clone the repository
-git clone https://github.com/your-username/meeting-summarizer.git
+git clone https://github.com/SanthoshS3E/meeting_summarizer_api
 cd meeting-summarizer
 2. Install Node dependencies
 npm install
