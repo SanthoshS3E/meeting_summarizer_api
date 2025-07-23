@@ -32,27 +32,7 @@ A backend API that takes **audio or text transcripts** of meetings and returns a
 
 ---
 
-## 📦 Project Structure
 
-meeting-summarizer/
-│
-├── server/
-│ ├── index.js # Main Node.js server
-│ ├── python/
-│ │ ├── whisper_to_text.py # Audio to text conversion using Whisper
-│ │ ├── summarize.py # Summarizes transcripts using BART
-│ │ ├── extract_todos.py # Extracts action items using regex & NLP
-│ │ └── db.py # SQLite3 storage logic
-│ └── routes/
-│ └── api.js # API endpoints
-│
-├── public/ # Static UI files (optional)
-├── Dockerfile
-├── package.json
-└── README.md
-
-
----
 
 ## 🖼️ Screenshots
 
