@@ -1,0 +1,13 @@
+Experiment with new payment system.
+As many members know, we have had a lot of problems with PayPal.
+The company that processes our credit card orders.
+This has been very frustrating for us and very frustrating for many of our members.
+We apologize for the problems some of you have had with PayPal.
+We do have some good news.
+Yesterday, we switched to a different system.
+We are now trying Google Checkout.
+In general, Google is a much better company with much better customer service.
+We have talked to them about our needs and concerns.
+And we are hopeful that Google's checkout system will be a big improvement.
+We plan to test Google Checkout for two weeks.
+Then decide whether to switch permanently.

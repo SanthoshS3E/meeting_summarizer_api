@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Meeting Summaries</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background:#f7f9fc; margin:0; color:#333; }
+    header { background:#0066ff; color:white; padding:15px 30px; font-size:20px; font-weight:bold; display:flex; justify-content:space-between; }
+    header button { background:rgba(255,255,255,0.2); border:none; padding:8px 15px; color:white; cursor:pointer; border-radius:5px; }
+    .container { max-width:600px; margin:40px auto; background:white; padding:30px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.05); text-align:center; }
+    input[type=file] { width:100%; padding:15px; border:1px solid #ddd; border-radius:8px; margin-bottom:20px; }
+    button.primary { background:#0066ff; color:white; border:none; padding:12px 25px; border-radius:8px; font-size:16px; cursor:pointer; }
+    .loading { margin-top:15px; color:#666; }
+    .result-box { text-align:left; margin-top:25px; padding:20px; background:#f1f4fb; border-left:4px solid #0066ff; border-radius:8px; }
+  </style>
+</head>
+<body>
+
+<header>
+  Meeting Summaries
+  <button onclick="logout()">Logout</button>
+</header>
+
+<div class="container">
+  <h2>Upload a Meeting Audio</h2>
+  <p>Select an audio file (mp3, wav, etc.) and get a transcript & summary.</p>
+
+  <input type="file" id="audioFile" accept="audio/*" />
+  <button class="primary" onclick="uploadAudio()">Upload & Summarize</button>
+  <button onclick="back()">⬅ Back to Dashboard</button>
+
+  <div class="loading" id="loading" style="display:none;">⏳ Processing your audio...</div>
+
+  <div class="result-box" id="result" style="display:none;">
+    <h3>📜 Transcript:</h3>
+    <p id="transcript"></p>
+    <h3>📝 Summary:</h3>
+    <p id="summary"></p>
+  </div>
+</div>
+
+<script>
+  const token = localStorage.getItem('jwt');
+  if (!token) window.location.href = '/login.html';
+
+  async function uploadAudio() {
+    const fileInput = document.getElementById('audioFile');
+    const file = fileInput.files[0];
+    if (!file) return alert("⚠ Please select an audio file!");
+
+    const formData = new FormData();
+    formData.append("audio", file);
+
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('result').style.display = 'none';
+
+    try {
+      const res = await fetch('/transcribe', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData
+      });
+      const data = await res.json();
+
+      document.getElementById('loading').style.display = 'none';
+
+      if (!data.success) {
+        alert("❌ Error: " + data.message);
+        return;
+      }
+
+      document.getElementById('transcript').textContent = data.transcript || "No transcript.";
+      document.getElementById('summary').textContent = data.summary || "No summary.";
+      document.getElementById('result').style.display = 'block';
+
+    } catch (err) {
+      document.getElementById('loading').style.display = 'none';
+      alert("❌ Network Error: " + err.message);
+    }
+  }
+
+  function back() {
+    window.location.href = '/dashboard.html';
+  }
+  function logout() {
+    localStorage.removeItem('jwt');
+    window.location.href = '/login.html';
+  }
+</script>
+
+</body>
+</html>

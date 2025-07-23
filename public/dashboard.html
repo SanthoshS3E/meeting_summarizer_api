@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard | Meeting Summarizer</title>
+  <style>
+    body { margin:0; font-family:'Segoe UI',sans-serif; background:#f7f9fc; color:#333; }
+    header { background:#0066ff; color:#fff; padding:15px 30px; font-size:20px; font-weight:bold; display:flex; justify-content:space-between; align-items:center; }
+    header button { background:rgba(255,255,255,0.2); border:none; padding:8px 15px; color:white; border-radius:5px; cursor:pointer; }
+    .container { max-width:900px; margin:40px auto; text-align:center; }
+    .card-container { display:flex; justify-content:center; gap:30px; flex-wrap:wrap; margin-bottom:30px; }
+    .card { background:white; width:250px; padding:30px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.05); text-align:center; cursor:pointer; transition:transform 0.2s ease; }
+    .card:hover { transform:translateY(-5px); }
+    .card-icon { font-size:50px; color:#0066ff; }
+    .history-box { text-align:left; background:white; padding:20px; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.05); }
+    .history-item { padding:10px 0; border-bottom:1px solid #eee; }
+    .history-item:last-child { border-bottom:none; }
+    .history-item small { color:#777; }
+  </style>
+</head>
+<body>
+
+<header>
+  Meeting Summarizer Dashboard
+  <button onclick="logout()">Logout</button>
+</header>
+
+<div class="container">
+  <h2>Welcome! What would you like to do?</h2>
+  <div class="card-container">
+    <div class="card" onclick="meetingSummary()">
+      <div class="card-icon">🎙️</div>
+      <h3>Meeting Summaries</h3>
+      <p>Upload your audio files and get a transcript & summary.</p>
+    </div>
+    <div class="card" onclick="reviewNotes()">
+      <div class="card-icon">📝</div>
+      <h3>Review Notes</h3>
+      <p>Paste your meeting notes and get a quick summary.</p>
+    </div>
+  </div>
+
+  <h2>Your Recent Summaries</h2>
+  <div class="history-box" id="history">Loading your history...</div>
+</div>
+
+<script>
+  const token = localStorage.getItem('jwt');
+  if (!token) window.location.href = '/login.html';
+
+  function meetingSummary() {
+    window.location.href = '/meeting.html';
+  }
+  function reviewNotes() {
+    window.location.href = '/review.html';
+  }
+  function logout() {
+    localStorage.removeItem('jwt');
+    window.location.href = '/login.html';
+  }
+
+  async function loadHistory() {
+    const res = await fetch('/history', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    const historyBox = document.getElementById('history');
+
+    if (data.success && data.history.length) {
+      historyBox.innerHTML = data.history.map(h => `
+        <div class="history-item">
+          <b>[${h.type}]</b> ${h.summary}...
+          <br><small>🕒 ${new Date(h.created_at).toLocaleString()}</small>
+        </div>
+      `).join('');
+    } else {
+      historyBox.innerHTML = "<p>No summaries yet. Start summarizing your meetings!</p>";
+    }
+  }
+
+  loadHistory();
+</script>
+
+</body>
+</html>

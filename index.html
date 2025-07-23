@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Audio Transcriber & Summarizer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      text-align: center;
+      padding: 50px;
+    }
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      max-width: 500px;
+      margin: auto;
+    }
+    input[type="file"] {
+      margin: 15px 0;
+    }
+    button {
+      background: #007BFF;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background: #999;
+    }
+    .loader {
+      display: none;
+      margin: 20px auto;
+    }
+    .result {
+      text-align: left;
+      margin-top: 20px;
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: 5px;
+    }
+    h2 {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1> Meeting Transcriber & Summarizer</h1>
+
+    <form id="uploadForm">
+      <input type="file" id="audioFile" accept="audio/*" required />
+      <br>
+      <button type="submit">Upload & Process</button>
+    </form>
+
+    <div class="loader" id="loader">⏳ Processing...</div>
+
+    <div class="result" id="result" style="display:none;">
+      <h2>Transcript:</h2>
+      <p id="transcript"></p>
+      <h2>Summary:</h2>
+      <p id="summary"></p>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('uploadForm');
+    const loader = document.getElementById('loader');
+    const resultDiv = document.getElementById('result');
+    const transcriptDiv = document.getElementById('transcript');
+    const summaryDiv = document.getElementById('summary');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const fileInput = document.getElementById('audioFile');
+      const file = fileInput.files[0];
+      if (!file) {
+        alert("Please select an audio file!");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("audio", file);
+
+      loader.style.display = "block";
+      resultDiv.style.display = "none";
+
+      try {
+        const response = await fetch("http://localhost:5000/transcribe", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await response.json();
+        loader.style.display = "none";
+
+        if (!data.success) {
+          alert("Error: " + data.message);
+          return;
+        }
+
+        transcriptDiv.textContent = data.transcript || "No transcript found.";
+        summaryDiv.textContent = data.summary || "No summary available.";
+        resultDiv.style.display = "block";
+
+      } catch (error) {
+        loader.style.display = "none";
+        alert("Error connecting to server: " + error);
+      }
+    });
+  </script>
+</body>
+</html>
